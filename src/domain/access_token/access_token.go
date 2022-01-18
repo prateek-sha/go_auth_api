@@ -1,7 +1,10 @@
 package access_token
 
 import (
+	"strings"
 	"time"
+
+	errors "github.com/prateek-sha/go_auth_api/src/utils/error"
 )
 
 const (
@@ -19,6 +22,14 @@ func GetNewAccessToken() AccessToken {
 	return AccessToken{
 		Expires: time.Now().UTC().Add(expirationTime * time.Hour).Unix(),
 	}
+}
+
+func (at AccessToken) Validate() *errors.RestError {
+	at.AccessToken = strings.TrimSpace(at.AccessToken)
+	if len(at.AccessToken) == 0 {
+		return errors.NewBadRequestError("Invalid access token")
+	}
+	return nil
 }
 
 func (at AccessToken) IsExpired() bool {
